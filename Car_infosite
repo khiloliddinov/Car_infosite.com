@@ -1,1 +1,90 @@
+import { useState } from "react"; import { motion } from "framer-motion"; import { Button } from "@/components/ui/button";
+
+export default function HomePage() { const [darkMode, setDarkMode] = useState(true); const [isLogin, setIsLogin] = useState(false); const [isAdmin, setIsAdmin] = useState(false); const [searchQuery, setSearchQuery] = useState("");
+
+const [brands, setBrands] = useState([ { id: 1, name: "Tesla", logo: "/tesla-logo.png" }, { id: 2, name: "BMW", logo: "/bmw-logo.png" }, { id: 3, name: "Audi", logo: "/audi-logo.png" }, { id: 4, name: "Mercedes", logo: "/mercedes-logo.png" }, { id: 5, name: "Toyota", logo: "/toyota-logo.png" }, { id: 6, name: "Honda", logo: "/honda-logo.png" }, { id: 7, name: "Ford", logo: "/ford-logo.png" } ]);
+
+const [cars, setCars] = useState([ { id: 1, brand: "Tesla", name: "Model S", desc: "Electric. Fast. Luxurious.", img: "/car1.jpg" }, { id: 2, brand: "BMW", name: "M5", desc: "Performance and Comfort.", img: "/car2.jpg" }, { id: 3, brand: "Audi", name: "R8", desc: "Luxury Sports Car.", img: "/car3.jpg" }, { id: 4, brand: "Toyota", name: "Supra", desc: "Iconic sports car.", img: "/car4.jpg" }, { id: 5, brand: "Ford", name: "Mustang", desc: "Classic American muscle.", img: "/car5.jpg" } ]);
+
+const deleteCar = (id) => { setCars(cars.filter(car => car.id !== id)); };
+
+const filteredCars = cars.filter(car => car.name.toLowerCase().includes(searchQuery.toLowerCase()) || car.brand.toLowerCase().includes(searchQuery.toLowerCase()) );
+
+return ( <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className={darkMode ? "bg-gray-900 text-white min-h-screen" : "bg-white text-black min-h-screen"} > {/* Navbar */} <motion.nav className="flex justify-between items-center p-6" initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8 }} > <h1 className="text-3xl font-bold">AutoLux</h1> </motion.nav>
+
+{/* Search Bar */}
+  <motion.div 
+    className="mt-6 text-center" 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 1.2 }}
+  >
+    <input 
+      type="text" 
+      placeholder="Search cars by brand or model..." 
+      className="p-2 rounded-md text-black w-1/2"
+      value={searchQuery} 
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+  </motion.div>
+
+  {/* Featured Cars with Smooth Animations and Parallax Effect */}
+  <motion.section 
+    className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 p-6 relative overflow-hidden"
+    initial="hidden"
+    animate="visible"
+    variants={{
+      hidden: { opacity: 0, y: 50 },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: { staggerChildren: 0.3, duration: 0.8 }
+      }
+    }}
+  >
+    {filteredCars.map((car, index) => (
+      <motion.div 
+        key={car.id} 
+        className={darkMode ? "bg-gray-800 p-4 rounded-xl shadow-lg" : "bg-gray-200 p-4 rounded-xl shadow-lg"} 
+        whileHover={{ scale: 1.05 }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.2 }}
+      >
+        <motion.img 
+          src={car.img} 
+          alt={car.name} 
+          className="rounded-lg" 
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.3 }}
+        />
+        <motion.h3 
+          className="text-xl font-semibold mt-4" 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: index * 0.3 }}
+        >
+          {car.brand} {car.name}
+        </motion.h3>
+        <motion.p 
+          className={darkMode ? "text-gray-400" : "text-gray-600"} 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: index * 0.4 }}
+        >
+          {car.desc}
+        </motion.p>
+        {isAdmin && (
+          <div className="mt-2">
+            <Button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 mr-2" onClick={() => deleteCar(car.id)}>Delete</Button>
+            <Button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1">Edit</Button>
+          </div>
+        )}
+      </motion.div>
+    ))}
+  </motion.section>
+</motion.div>
+
+); }
+
 
